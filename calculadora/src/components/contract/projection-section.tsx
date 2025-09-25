@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Wand2, Loader2 } from 'lucide-react';
 import { ProfitabilityCalculator } from './profitability-calculator';
 import { ProjectionChart } from './projection-chart';
 import { InvestmentRecovery } from './investment-recovery';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { explainProjections } from '@/ai/flows/explain-projections-flow';
 import type { ExplainProjectionsInput } from '@/lib/schemas';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface ProjectionData {
   grossProfit: number;
@@ -26,28 +26,34 @@ export function ProjectionSection() {
   const [investmentData, setInvestmentData] = useState<{ totalInvestment: number; projectsToRecover: number} | null>(null);
   const [explanation, setExplanation] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  
+  const debouncedProjectionData = useDebounce(projectionData, 1000);
+  const debouncedInvestmentData = useDebounce(investmentData, 1000);
 
-  const handleGenerateExplanation = async () => {
-    if (!projectionData || !investmentData) {
-       console.error("Faltan Datos", "Por favor, calcule la rentabilidad y asegúrese de que haya una inversión inicial para generar la explicación.");
-      return;
-    }
+  useEffect(() => {
+    const generateExplanation = async () => {
+      if (!debouncedProjectionData || !debouncedInvestmentData || debouncedProjectionData.grossProfit <= 0) {
+        setExplanation('');
+        return;
+      }
 
-    setIsAiLoading(true);
-    setExplanation('');
-    try {
-      const result = await explainProjections({
-        ...projectionData,
-        ...investmentData
-      } as ExplainProjectionsInput);
-      setExplanation(result.explanation);
-    } catch (error) {
-      console.error('AI call failed:', error);
-       console.error("Error de IA", "No se pudo generar la explicación. Intente de nuevo.");
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
+      setIsAiLoading(true);
+      try {
+        const result = await explainProjections({
+          ...debouncedProjectionData,
+          ...debouncedInvestmentData
+        } as ExplainProjectionsInput);
+        setExplanation(result.explanation);
+      } catch (error) {
+        console.error('AI call failed:', error);
+        setExplanation('No se pudo generar la explicación. Intente ajustar los valores.');
+      } finally {
+        setIsAiLoading(false);
+      }
+    };
+
+    generateExplanation();
+  }, [debouncedProjectionData, debouncedInvestmentData]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -63,35 +69,29 @@ export function ProjectionSection() {
           />
         </div>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader>
             <div>
-              <CardTitle>Explicación con IA</CardTitle>
-              <CardDescription>Gemini analiza y explica tus proyecciones.</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Wand2 className="text-primary" />
+                Explicación con IA
+              </CardTitle>
+              <CardDescription>Gemini analiza y explica tus proyecciones en tiempo real.</CardDescription>
             </div>
-            <Button onClick={handleGenerateExplanation} disabled={isAiLoading || !projectionData}>
-              {isAiLoading ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Wand2 />
-              )}
-              <span className="ml-2 hidden md:inline">Generar Explicación</span>
-            </Button>
           </CardHeader>
-          <CardContent>
-            {isAiLoading && (
+          <CardContent className="min-h-[150px]">
+            {isAiLoading ? (
               <div className="flex items-center justify-center p-8">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <p className="ml-4 text-muted-foreground">Analizando números...</p>
               </div>
-            )}
-            {explanation ? (
+            ) : explanation ? (
               <div className="prose prose-sm dark:prose-invert max-w-none text-foreground/90">
                 {explanation.split('\n\n').map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
               </div>
             ) : (
-              !isAiLoading && <p className="text-center text-muted-foreground p-8">Haz clic en "Generar Explicación" para que la IA analice los resultados de la calculadora.</p>
+              <p className="text-center text-muted-foreground p-8">Ajuste los valores en la calculadora para generar una explicación.</p>
             )}
           </CardContent>
         </Card>

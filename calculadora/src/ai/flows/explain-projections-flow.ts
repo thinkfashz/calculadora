@@ -23,27 +23,27 @@ const prompt = ai.definePrompt({
   name: 'explainProjectionsPrompt',
   input: {schema: ExplainProjectionsInputSchema},
   output: {schema: ExplainProjectionsOutputSchema},
-  prompt: `You are a seasoned negotiation expert advising an investor about a partnership with a construction startup. Your goal is to frame the project's profitability in a compelling way, emphasizing the strong return on investment and the strategic benefits of the deal structure. Address the investor directly.
+  prompt: `Eres un experto negociador que asesora a un inversor sobre una asociación con una startup de construcción. Tu objetivo es enmarcar la rentabilidad del proyecto de una manera convincente, enfatizando el fuerte retorno de la inversión y los beneficios estratégicos de la estructura del acuerdo. Dirígete directamente al inversor.
 
-Analyze the following project data and generate a concise, persuasive summary (2-3 short paragraphs).
+Analiza los siguientes datos del proyecto y genera un resumen conciso y persuasivo (2-3 párrafos cortos).
 
-- Begin by directly addressing the investor and presenting the project's gross profit as a clear indicator of its viability.
-- Clearly state the investor's 30% share, framing it as a direct and attractive return from this single project.
-- Highlight the strategic value of the 40% Reinvestment Fund. Explain that this fund is the engine for accelerating capital recovery, directly benefiting the investor by paying back their initial investment faster.
-- Conclude by stating the projected number of projects required to recover the full initial investment. Frame this as a clear, achievable timeline for a full return of capital, after which the investor's primary financial commitment is complete, yet they have enabled a successful venture.
-- Keep the tone professional, confident, and focused on the benefits for the investor. Use Chilean Pesos (CLP) for all currency values.
+- Comienza dirigiéndote directamente al inversor y presentando la utilidad bruta del proyecto como un claro indicador de su viabilidad.
+- Indica claramente la participación del 30% del inversor, enmarcándola como un retorno directo y atractivo de este único proyecto.
+- Destaca el valor estratégico del Fondo de Reinversión del 40%. Explica que este fondo es el motor para acelerar la recuperación del capital, beneficiando directamente al inversor al devolverle su inversión inicial más rápido.
+- Concluye indicando el número proyectado de proyectos necesarios para recuperar la inversión inicial completa. Enmárcalo como un cronograma claro y alcanzable para un retorno total del capital, después del cual el principal compromiso financiero del inversor se completa, pero ha permitido un emprendimiento exitoso.
+- Mantén un tono profesional, seguro y centrado en los beneficios para el inversor. Utiliza Pesos Chilenos (CLP) para todos los valores monetarios.
 
-Project Data:
-- Sale Price: {{{salePrice}}} CLP
-- Construction Cost: {{{constructionCost}}} CLP
-- Gross Profit: {{{grossProfit}}} CLP
-- Investor's Share (30%): {{{investorShare}}} CLP
-- Founder's Share (30%): {{{founderShare}}} CLP
-- Reinvestment Fund (40%): {{{reinvestmentFund}}} CLP
-- Total Initial Investment to Recover: {{{totalInvestment}}} CLP
-- Estimated Projects to Recover Capital: {{{projectsToRecover}}}
+Datos del Proyecto:
+- Precio de Venta: {{{salePrice}}} CLP
+- Costo de Construcción: {{{constructionCost}}} CLP
+- Utilidad Bruta: {{{grossProfit}}} CLP
+- Participación del Inversor (30%): {{{investorShare}}} CLP
+- Participación del Fundador (30%): {{{founderShare}}} CLP
+- Fondo de Reinversión (40%): {{{reinvestmentFund}}} CLP
+- Inversión Inicial Total a Recuperar: {{{totalInvestment}}} CLP
+- Proyectos Estimados para Recuperar Capital: {{{projectsToRecover}}}
 
-Generate the explanation for the investor based on this data.
+Genera la explicación para el inversor basada en estos datos.
 `,
 });
 

@@ -180,8 +180,8 @@ export default function HomePage() {
               Casas Fabrick
             </h1>
           </div>
-          <div className="flex items-center gap-2">
-             <Button variant="outline" asChild>
+          <div className="hidden items-center gap-2 md:flex">
+            <Button variant="outline" asChild>
               <Link href="/calculator">
                 <Calculator className="mr-2 h-4 w-4" />
                 Calculadora y Proyecciones
@@ -196,9 +196,16 @@ export default function HomePage() {
               Generar y Descargar PDF
             </Button>
           </div>
+          <div className="flex items-center gap-2 md:hidden">
+            <Button variant="outline" size="icon" asChild>
+              <Link href="/calculator">
+                <Calculator className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </header>
 
-        <main className="p-4 sm:p-6">
+        <main className="p-4 sm:p-6 pb-24 md:pb-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
             <div className="no-print space-y-6 lg:col-span-2">
               <ContractForm
@@ -212,6 +219,26 @@ export default function HomePage() {
             </div>
           </div>
         </main>
+        
+        {/* Mobile Bottom Bar */}
+        <footer className="no-print fixed bottom-0 left-0 right-0 z-10 border-t bg-background/95 p-2 backdrop-blur-sm md:hidden">
+            <div className="flex w-full items-center justify-center">
+                 <Button 
+                    onClick={handlePrintAndDownload} 
+                    disabled={isPdfLoading}
+                    className="w-full"
+                    size="lg"
+                >
+                    {isPdfLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                        <Download className="mr-2 h-4 w-4" />
+                    )}
+                    Generar y Descargar PDF
+                </Button>
+            </div>
+        </footer>
+
       </div>
     </>
   );

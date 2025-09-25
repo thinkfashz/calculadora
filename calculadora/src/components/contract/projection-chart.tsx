@@ -72,6 +72,7 @@ export function ProjectionChart({ data }: ProjectionChartProps) {
     : [];
 
   const formatCurrency = (value: number) => {
+    if (value === undefined || value === null || isNaN(value)) return '$0';
     return new Intl.NumberFormat('es-CL', {
       style: 'currency',
       currency: 'CLP',
@@ -81,7 +82,7 @@ export function ProjectionChart({ data }: ProjectionChartProps) {
   
   const tickFormatter = (value: number) => {
     const million = value / 1000000;
-    return `$${million}M`;
+    return `$${million.toFixed(0)}M`;
   };
 
   return (
@@ -89,37 +90,43 @@ export function ProjectionChart({ data }: ProjectionChartProps) {
       <CardHeader>
         <CardTitle>Distribución de Utilidad Bruta</CardTitle>
         <CardDescription>
-          {data
+          {data && data.grossProfit > 0
             ? `Proyección para una utilidad de ${formatCurrency(data.grossProfit)}`
             : 'Ingrese datos en la calculadora para ver la proyección.'}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
-            <YAxis tickFormatter={tickFormatter} />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  formatter={(value) => formatCurrency(Number(value))}
-                />
-              }
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="amount" radius={8} />
-          </BarChart>
-        </ChartContainer>
+      <CardContent className="flex-1">
+       {data && data.grossProfit > 0 ? (
+          <ChartContainer config={chartConfig} className="min-h-[250px] w-full h-full">
+            <BarChart accessibilityLayer data={chartData} margin={{ top: 20 }}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <YAxis tickFormatter={tickFormatter} />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value) => formatCurrency(Number(value))}
+                  />
+                }
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar dataKey="amount" radius={8} />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex h-full items-center justify-center text-muted-foreground text-center p-8">
+            <p>Los valores actuales no generan utilidad.</p>
+          </div>
+        )}
       </CardContent>
-      {data && (
-        <CardFooter className="flex-col items-start gap-2 text-sm">
+      {data && data.grossProfit > 0 && (
+        <CardFooter className="flex-col items-start gap-2 text-sm border-t pt-4">
           <div className="flex items-center gap-2 font-medium leading-none">
             Costo Construcción: {formatCurrency(data.constructionCost)}
             <TrendingUp className="h-4 w-4" />
